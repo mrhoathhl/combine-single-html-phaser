@@ -2,7 +2,7 @@
 //requiring path and fs modules
 const path = require('path');
 const fs = require('fs');
-const nameGame = "BL";
+const nameGame = "TESTMATCH3D";
 
 //joining path of directory 
 const directoryPath = path.join(__dirname, 'source');
@@ -14,24 +14,25 @@ fs.readdir(directoryPath, function (err, files) {
     }
     //listing all files using forEach
 
-    let check = 0
-    let index = fs.readFileSync(`${directoryPath}/${files[files.length - 1]}`);
-    files.forEach(function (file) {
-        // Do whatever you want to do with the file
+    let check = 0;
+    const indexFileMain = files.findIndex((elem) => elem === "index.html");
 
-        const codeOnFile = fs.readFileSync(`${directoryPath}/${file}`);
-        let replaced = index.toString().replace(`<script src="${file}"></script>`, `<script> ${codeOnFile}</script>`)
-        // .replace(`<script type="text/json" src="${file}"></script>`, `<script> let jsonFile = ${da}</script>`);
-        index = replaced;
+    let fileMain = fs.readFileSync(`${directoryPath}/${files[indexFileMain]}`);
+    files.map(function (file, index) {
+        if (index !== indexFileMain) {
+            const codeOnFile = fs.readFileSync(`${directoryPath}/${file}`);
+            let replaced = fileMain.toString().replace(`<script src="${file}"></script>`, `<script> ${codeOnFile}</script>`)
+            // .replace(`<script type="text/json" src="${file}"></script>`, `<script> let jsonFile = ${da}</script>`);
+            fileMain = replaced;
+        }
         check++
+        if (check == files.length) {
+            fs.writeFile(`${nameGame}.html`, `${fileMain}`, function (err) {
+                if (err) return console.log(err);
+            });
+        }
     });
-    if (check == files.length) {
-        fs.writeFile(`${nameGame}.html`, `${index}`, function (err) {
-            if (err) return console.log(err);
-        });
-
-    }
-    //deletefile
+    // deletefile
     // files.forEach(function (file) {
     //     fs.unlink(`${directoryPath}/${file}`, (err) => {
     //         if (err) {
